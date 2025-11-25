@@ -1,0 +1,49 @@
+using Godot;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+public partial class ActorConsumer : Node
+{
+	[Export] public RabbitmqBase RabbitMqBase { get; set; }
+	[Export] public RichTextLabel RichLabel { get; set; }
+
+	public override void _Ready()
+	{
+		if (RabbitMqBase != null)
+		{
+			RabbitMqBase.MessageReceived += OnMessageReceived;
+		}
+	}
+
+	private void OnMessageReceived(string routingKey, string message)
+	{
+		try
+		{
+			ActorMessage chatMessage = JsonSerializer.Deserialize<ActorMessage>(message);
+			UpdateUI(chatMessage);
+		}
+		catch (JsonException ex)
+		{
+			GD.PrintErr($"Failed to deserialize chat message: {ex.Message}");
+		}
+
+	}
+
+	private void UpdateUI(ActorMessage actorMessage)
+	{
+		GD.Print("[xxx] received message");
+		if (actorMessage.Message != null)
+            RichLabel.Text = actorMessage.Message;
+    		// RichLabel.Text = "test"; //actorMessage.Message;
+	}
+}
+
+public partial class ActorMessage : Node
+{
+	[JsonPropertyName("id")]
+	public string id { get; private set; }
+
+	[JsonPropertyName("message")]
+	public string Message { get; set; }
+}

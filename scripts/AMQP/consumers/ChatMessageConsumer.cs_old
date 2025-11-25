@@ -1,0 +1,78 @@
+using Godot;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+public partial class ChatMessageConsumer : Node
+{
+	[Export] public RabbitmqBase RabbitMqBase { get; set; }
+    [Export] public Label UsernameLabel { get; set; }
+    [Export] public Label MsgContentLabel { get; set; }
+
+	public override void _Ready()
+	{
+		if (RabbitMqBase != null) {
+			RabbitMqBase.MessageReceived += OnMessageReceived;
+		}
+	}
+
+	private void OnMessageReceived(string routingKey, string message)
+    {
+        try
+        {
+            ChatMessage chatMessage = JsonSerializer.Deserialize<ChatMessage>(message);
+            UpdateUI(chatMessage);
+        }
+        catch (JsonException ex)
+        {
+            GD.PrintErr($"Failed to deserialize chat message: {ex.Message}");
+        }
+        
+    }
+
+	private void UpdateUI(ChatMessage chatMessage)
+    {
+        if (UsernameLabel != null)
+            UsernameLabel.Text = chatMessage.ChatterUserName;
+            
+        if (MsgContentLabel != null)
+            MsgContentLabel.Text = chatMessage.MessageText;
+    }
+}
+
+public partial class ChatMessage : Node
+{
+	[JsonPropertyName("id")]
+	public string id { get; private set;}
+
+	[JsonPropertyName("broadcaster_user_id")]
+	public string BroadcasterUserId { get; set; }
+
+	[JsonPropertyName("broadcaster_user_name")]
+	public string BroadcasterUserName { get; set; }
+	
+	[JsonPropertyName("chatter_user_id")]
+	public string ChatterUserId { get; set; }
+
+	[JsonPropertyName("chatter_user_name")]
+	public string ChatterUserName { get; set; }
+
+	[JsonPropertyName("message_text")]
+	public string MessageText { get; set; }
+
+	[JsonPropertyName("badges")]
+	public List<Badge> Badges { get; set;}
+}
+
+public partial class Badge : Node
+{
+    [JsonPropertyName("set_id")]
+    [Export] public string SetId { get; set; }
+
+    [JsonPropertyName("id")]
+    [Export] public string Id { get; set; }
+
+    [JsonPropertyName("info")]
+    [Export] public string Info { get; set; }
+}

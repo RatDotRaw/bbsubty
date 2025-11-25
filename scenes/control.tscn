@@ -1,0 +1,232 @@
+[gd_scene load_steps=20 format=3 uid="uid://yoi53gqvhp4y"]
+
+[ext_resource type="Script" uid="uid://cnrpdg7nqbtoj" path="res://BBCode/cuss.gd" id="1_tjwpk"]
+[ext_resource type="Script" uid="uid://bka815byo0dca" path="res://BBCode/jit.gd" id="2_lpubu"]
+[ext_resource type="Script" uid="uid://csxu5n83svp4d" path="res://BBCode/rain.gd" id="3_lt2xq"]
+[ext_resource type="Script" uid="uid://6gm5x5agbh2k" path="res://BBCode/sway.gd" id="4_1p5nq"]
+[ext_resource type="Script" uid="uid://bgwv5uvjeh40t" path="res://BBCode/spring.gd" id="5_hob4j"]
+[ext_resource type="Script" uid="uid://qt2c1dkxnnio" path="res://scripts/AMQP/AMQPTopicListener.cs" id="6_1p5nq"]
+[ext_resource type="Script" uid="uid://bbkylovd0l86d" path="res://scenes/message_display.gd" id="7_hob4j"]
+[ext_resource type="Script" uid="uid://d4ehqg8e2ybv2" path="res://scripts/WindowBase.gd" id="7_lt2xq"]
+[ext_resource type="Script" uid="uid://c132785xw4sxk" path="res://scenes/ai_subtitles.gd" id="8_hob4j"]
+
+[sub_resource type="Theme" id="Theme_lt2xq"]
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_ee4bf"]
+script = ExtResource("1_tjwpk")
+metadata/_custom_type_script = "uid://cnrpdg7nqbtoj"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_qtu10"]
+script = ExtResource("2_lpubu")
+metadata/_custom_type_script = "uid://bka815byo0dca"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_kbped"]
+script = ExtResource("3_lt2xq")
+metadata/_custom_type_script = "uid://csxu5n83svp4d"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_fj5cn"]
+script = ExtResource("4_1p5nq")
+metadata/_custom_type_script = "uid://6gm5x5agbh2k"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_iy58a"]
+script = ExtResource("5_hob4j")
+metadata/_custom_type_script = "uid://bgwv5uvjeh40t"
+
+[sub_resource type="Animation" id="Animation_1p5nq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CenterContainer/WindowSizeLabel:label_settings:font_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CenterContainer/WindowSizeLabel:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_lt2xq"]
+resource_name = "fade out"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CenterContainer/WindowSizeLabel:label_settings:font_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.5, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CenterContainer/WindowSizeLabel:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hob4j"]
+_data = {
+&"RESET": SubResource("Animation_1p5nq"),
+&"fade out": SubResource("Animation_lt2xq")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_01bab"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_lt2xq")
+current_tab = 2
+
+[node name="Control" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="TabContainer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="RichTextLabel" type="RichTextLabel" parent="TabContainer/Control/MarginContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "shake:[shake]crazy shaky text![/shake]
+wave:[wave]crazy wavy text![/wave]
+
+cuss: What the  [cuss]fuck[/cuss] did you [cuss]fucking[/cuss] saying?
+jitt: [jit]Whoat[/jit] it is all [jit]shakey[/jit]
+rain: [rain freq=5]Its a sad day, because of the rain...[/rain]
+sway: [sway]I didn't remember what sway was.[/sway]
+spring: [spring]very springgy text[/spring]"
+fit_content = true
+custom_effects = [SubResource("RichTextEffect_ee4bf"), SubResource("RichTextEffect_qtu10"), SubResource("RichTextEffect_kbped"), SubResource("RichTextEffect_fj5cn"), SubResource("RichTextEffect_iy58a")]
+
+[node name="Chat" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ChatMessage" type="Control" parent="TabContainer/Chat" node_paths=PackedStringArray("listener")]
+anchors_preset = 0
+script = ExtResource("7_hob4j")
+listener = NodePath("../../Actors/AMQPTopicListener")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="TabContainer/Chat/ChatMessage"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Chat/ChatMessage"]
+layout_mode = 0
+offset_right = 131.0
+offset_bottom = 50.0
+
+[node name="Username" type="Label" parent="TabContainer/Chat/ChatMessage/VBoxContainer"]
+layout_mode = 2
+text = "Username"
+
+[node name="MsgContent" type="Label" parent="TabContainer/Chat/ChatMessage/VBoxContainer"]
+layout_mode = 2
+text = "Message content"
+
+[node name="Actors" type="Control" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="AMQPTopicListener" type="Node" parent="TabContainer/Actors"]
+script = ExtResource("6_1p5nq")
+RoutingKeyPattern = "#"
+metadata/_custom_type_script = "uid://qt2c1dkxnnio"
+
+[node name="MarginContainer" type="MarginContainer" parent="TabContainer/Actors" node_paths=PackedStringArray("listener")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+script = ExtResource("8_hob4j")
+listener = NodePath("../AMQPTopicListener")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="TabContainer/Actors/MarginContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "shake:[shake]crazy shaky text![/shake]
+wave:[wave]crazy wavy text![/wave]
+
+cuss: What the  [cuss]fuck[/cuss] did you [cuss]fucking[/cuss] saying?
+jitt: [jit]Whoat[/jit] it is all [jit]shakey[/jit]
+rain: [rain freq=5]Its a sad day, because of the rain...[/rain]
+sway: [sway]I didn't remember what sway was.[/sway]
+spring: [spring]very springgy text[/spring]"
+fit_content = true
+custom_effects = [SubResource("RichTextEffect_ee4bf"), SubResource("RichTextEffect_qtu10"), SubResource("RichTextEffect_kbped"), SubResource("RichTextEffect_fj5cn"), SubResource("RichTextEffect_iy58a")]
+
+[node name="Window" type="Window" parent="."]
+oversampling_override = 1.0
+title = "Bruhh"
+position = Vector2i(620, 36)
+size = Vector2i(500, 100)
+visible = false
+script = ExtResource("7_lt2xq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Window"]
+libraries = {
+&"": SubResource("AnimationLibrary_hob4j")
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="Window"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="WindowSizeLabel" type="Label" parent="Window/CenterContainer"]
+layout_mode = 2
+text = "0x0"
+label_settings = SubResource("LabelSettings_01bab")
