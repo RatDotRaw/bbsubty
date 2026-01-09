@@ -18,12 +18,19 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+SettingsManager="*res://scripts/SettingsManager.gd"
 AmqpConn="*res://scripts/AMQP/AMQPConn.cs"
+AmqpSimplePublisher="*res://scripts/AMQP/AMQPSimplePublisher.cs"
 
 [display]
 
 window/subwindows/embed_subwindows=false
+window/per_pixel_transparency/allowed=true
 
 [dotnet]
 
 project/assembly_name="BBsubty"
+
+[gui]
+
+theme/default_theme_scale=2.0

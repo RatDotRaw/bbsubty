@@ -6,8 +6,9 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 [GlobalClass]
-public partial class AMQPTopicListener : AMQPConn
+public partial class AMQPTopicListener: AMQPClient
 {
+	[Export] public AMQPConn AmqpConn;
 	[Export] public string ExchangeName = "nixi_topic";
 	[Export] public string RoutingKeyPattern = "#"; // e.g. player.login, player.logout
 
@@ -15,44 +16,48 @@ public partial class AMQPTopicListener : AMQPConn
 
 	private string _queueName;
 
-	protected override async Task Connect()
+	protected override async void StartClientLogic(IChannel channel)
 	{
-		await base.Connect();
-		if (!IsConnected) return;
+		// if (_queueName != null) 
+		// 	return;
 
 		try
 		{
-			// declare topic exchange
-			await Channel.ExchangeDeclareAsync(
-				exchange: ExchangeName,
-				type: ExchangeType.Topic
-				// durable: true
-			);
-
 			// declare exclusive queue
-			var queueDeclareResult = await Channel.QueueDeclareAsync(
+			var queueDeclareResult = await channel.QueueDeclareAsync(
 				queue: "",
 				durable: false,
 				exclusive: true,
 				autoDelete: true
 			);
-
 			_queueName = queueDeclareResult.QueueName;
-
+		}
+		catch (Exception e)
+		{
+			GD.PrintErr("TopicConsumer: Failed to create channel/queue: " + e.Message);
+			return;
+		}
+		try {
 			// bind to exchange
-			await Channel.QueueBindAsync(
+			await channel.QueueBindAsync(
 				queue: _queueName,
 				exchange: ExchangeName,
 				routingKey: RoutingKeyPattern
 			);
-
 			GD.Print($"Bound exclusive queue '{_queueName}' to exchange '{ExchangeName}' with key pattern '{RoutingKeyPattern}'");
+		} 
+		catch (Exception e)
+		{
+			GD.PrintErr("TopicConsumer: Failed to bind to queue, does it exist?: " + e.Message);
+			return;
+		}
+		try {
 
 			// start consuming
-			var consumer = new AsyncEventingBasicConsumer(Channel);
+			var consumer = new AsyncEventingBasicConsumer(channel);
 			consumer.ReceivedAsync += OnMessageReceived;
 
-			await Channel.BasicConsumeAsync(
+			await channel.BasicConsumeAsync(
 				queue: _queueName,
 				autoAck: true, // auto ack for simplicity
 				consumer: consumer
@@ -60,7 +65,8 @@ public partial class AMQPTopicListener : AMQPConn
 		}
 		catch (Exception e)
 		{
-			GD.PrintErr("Failed to initialize topic consumer: " + e.Message);
+			GD.PrintErr("TopicConsumer: Failed to start consuming: " + e.Message);
+			return;
 		}
 	}
 
@@ -70,7 +76,7 @@ public partial class AMQPTopicListener : AMQPConn
 		var message = Encoding.UTF8.GetString(body);
 		var routingKey = e.RoutingKey;
 
-		GD.Print($"[{routingKey}] {message}");
+		GD.Print($"message received: [{routingKey}] {message}");
 
 		// marshal to godot's main thread
 		CallDeferred(nameof(DispatchMessageToMainThread), routingKey, message);

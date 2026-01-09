@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnarqounspxsb"]
+
+[ext_resource type="Script" uid="uid://c060alxngooji" path="res://scripts/widgets/controls_widget.gd" id="1_v2ggv"]
+
+[node name="ControlsWidget" type="PanelContainer"]
+offset_right = 147.0
+offset_bottom = 31.0
+script = ExtResource("1_v2ggv")
+
+[node name="RabbitConnectButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Connect to Rabbit"
+
+[connection signal="pressed" from="RabbitConnectButton" to="." method="_on_rabbit_connect_button_pressed"]

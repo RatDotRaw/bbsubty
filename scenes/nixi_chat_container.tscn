@@ -1,0 +1,99 @@
+[gd_scene load_steps=14 format=3 uid="uid://djt0bmsg0rnfn"]
+
+[ext_resource type="Script" uid="uid://c132785xw4sxk" path="res://scenes/ai_subtitles.gd" id="1_jwkof"]
+[ext_resource type="AudioStream" uid="uid://dr8igru66l6oi" path="res://assets/sounds/WAVE_SE_093.wav" id="2_jwkof"]
+[ext_resource type="Script" uid="uid://cnrpdg7nqbtoj" path="res://BBCode/cuss.gd" id="2_wkvxh"]
+[ext_resource type="Script" uid="uid://bka815byo0dca" path="res://BBCode/jit.gd" id="3_ur7y0"]
+[ext_resource type="Script" uid="uid://csxu5n83svp4d" path="res://BBCode/rain.gd" id="4_hb02p"]
+[ext_resource type="Script" uid="uid://6gm5x5agbh2k" path="res://BBCode/sway.gd" id="5_40j8j"]
+[ext_resource type="Script" uid="uid://bgwv5uvjeh40t" path="res://BBCode/spring.gd" id="6_yn65b"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_vb5ih"]
+random_pitch = 1.3
+streams_count = 1
+stream_0/stream = ExtResource("2_jwkof")
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_ee4bf"]
+script = ExtResource("2_wkvxh")
+metadata/_custom_type_script = "uid://cnrpdg7nqbtoj"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_qtu10"]
+script = ExtResource("3_ur7y0")
+metadata/_custom_type_script = "uid://bka815byo0dca"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_kbped"]
+script = ExtResource("4_hb02p")
+metadata/_custom_type_script = "uid://csxu5n83svp4d"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_fj5cn"]
+script = ExtResource("5_40j8j")
+metadata/_custom_type_script = "uid://6gm5x5agbh2k"
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_iy58a"]
+script = ExtResource("6_yn65b")
+metadata/_custom_type_script = "uid://bgwv5uvjeh40t"
+
+[node name="MarginContainer" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+script = ExtResource("1_jwkof")
+
+[node name="TextAdvanceStreamPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamRandomizer_vb5ih")
+mix_target = 2
+max_polyphony = 16
+bus = &"Text effect"
+
+[node name="PopOutChat" type="Window" parent="."]
+unique_name_in_owner = true
+transparent_bg = true
+oversampling_override = 1.0
+title = "Pop out chat"
+visible = false
+content_scale_size = Vector2i(680, 420)
+
+[node name="LabelTarget" type="Control" parent="PopOutChat"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PopOutButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Pop Out"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "shake:[shake]crazy shaky text![/shake]
+wave:[wave]crazy wavy text![/wave]
+
+cuss: What the  [cuss]fuck[/cuss] did you [cuss]fucking[/cuss] saying?
+jitt: [jit]Whoat[/jit] it is all [jit]shakey[/jit]
+rain: [rain freq=5]Its a sad day, because of the rain...[/rain]
+sway: [sway]I didn't remember what sway was.[/sway]
+spring: [spring]very springgy text[/spring]"
+fit_content = true
+custom_effects = [SubResource("RichTextEffect_ee4bf"), SubResource("RichTextEffect_qtu10"), SubResource("RichTextEffect_kbped"), SubResource("RichTextEffect_fj5cn"), SubResource("RichTextEffect_iy58a")]
+
+[connection signal="close_requested" from="PopOutChat" to="." method="_on_window_close_requested"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PopOutButton" to="." method="_on_pop_out_button_pressed"]
