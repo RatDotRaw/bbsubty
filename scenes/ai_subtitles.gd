@@ -5,109 +5,121 @@ extends Control
 @onready var text_advance_stream_player: AudioStreamPlayer = %TextAdvanceStreamPlayer
 
 var json = JSON.new()
-var regex = RegEx.new()
+var bbcode_regex = RegEx.new()
+var emotion_regex := RegEx.new()
 var text_timer: Timer = Timer.new() # timer for visible character
 
+#var displayed_text: String = "" # new text will be appended here, and then put onto label. Preventing weird behavior.
+var current_emotion: String = "neutral"
 var current_string_index: int = 0
+var is_response_done: bool = true
 
 func _ready() -> void:
 	assert(listener, "listener not assigned in editor")
+
+	# compile regexes once
+	bbcode_regex.compile("<(.*?)>(.*?)</\\1>")
+	emotion_regex.compile("\\[{2}(.+?)\\]{2}")
+
 	# setup timer
 	text_timer.one_shot = false
 	add_child(text_timer)
 	text_timer.timeout.connect(_reveal_single_character)
+	label.visible_ratio = 0
 	_start_text_timer()
-	
+
 	# connectin signals
 	listener.MessageReceived.connect(_on_message_received)
 
-
-
-func _on_message_received(topic: String, message: String):
-	var e: Error = json.parse(message)
-	if not e==OK:
+func _on_message_received(topic: String, message: String) -> void:
+	var parse_error := json.parse(message)
+	if parse_error != OK:
+		push_error("Failed to parse JSON message: %s" % message)
 		return
-	
-	print("received object:", json.data)
+
 	var msg: Variant = json.data
-	if msg.has("success"):
-		if msg["success"]:
-			var text = msg["result"]["content"]
-			# filter text
-			text = _process_bbcode(text)
-			text = _process_emotions(text)
-			# reset shenanigans
-			current_string_index = 0
-			label.visible_characters = 0
-			label.text = text
-			
-			_start_text_timer()
+
+	# Type check
+	if not msg is Dictionary:
+		push_error("Expected dictionary, got: %s" % typeof(msg))
+		return
+
+	# Check for success flag
+	if not msg.get("success", false):
+		return
+
+	# Handle stream end
+	if msg.get("done", false) == true:
+		is_response_done = true
+		print("label text:", label.text)
+		return
+
+	# Handle stream start (first chunk of NEW message)
+	# Only reset if we were done and now getting new content
+	if is_response_done and msg.get("done", true) == false:
+		_reset_label()
+		is_response_done = false
+
+	# Process content
+	var result = msg.get("result")
+	if result and result is Dictionary:
+		var content = result.get("content", "")
+		if content:
+			_append_text(content)
+
+func _append_text(text: String) -> void:
+	text = _process_bbcode(text)
+	text = _process_emotions(text)
+	
+	label.text += text # can't use append_text, LLM might be unpredictable
+	_start_text_timer()
+
+func _reset_label() -> void:
+	current_string_index = 0
+	label.visible_characters = 0
+	label.text = ""
 
 #region dialog box effects
 func _start_text_timer() -> void:
 	text_timer.wait_time = SettingsManager.text_visible_character_speed
+	if not text_timer.is_stopped():
+		return  # Already running
 	text_timer.start()
 
 func _reveal_single_character() -> void:
-	if current_string_index < label.get_parsed_text().length():
-		current_string_index += 2
-		label.visible_characters = current_string_index
-		
-		# sound effects
+	# Get the actual number of displayable characters (ignoring BBCode tags)
+	var total_chars = label.get_total_character_count()
+	
+	if label.visible_characters < total_chars:
+		# Increment by 1 (or 2 if you want it faster)
+		label.visible_characters += 1 
+
+		# Sound effects logic
 		if SettingsManager.play_during_playing:
-			if current_string_index % SettingsManager.sfx_per_characters == 0:
+			if label.visible_characters % SettingsManager.sfx_per_characters == 0:
 				text_advance_stream_player.play()
 		elif not text_advance_stream_player.playing:
 			text_advance_stream_player.play()
 	else:
 		text_timer.stop()
-		print("Text fully revealed, stopping timer.")
+		print("Text fully revealed, stopping timer.", label.get_parsed_text().length(), " ", current_string_index)
 #endregion
+
 #region text filtering
 func _process_bbcode(xml_string: String) -> String:
 	if SettingsManager.renderBBCode:
-		regex.compile("<(.*?)>(.*?)</\\1>")
 		# replace xml with [tag]content[/tag]
-		var bbcode_string = regex.sub(xml_string, "[$1]$2[/$1]", true) #"[$1]$2[/$1]", true)
+		var bbcode_string = bbcode_regex.sub(xml_string, "[$1]$2[/$1]", true) #"[$1]$2[/$1]", true)
 		return bbcode_string
 	else: # remove tags
-		var bbcode_string = regex.sub(xml_string, "$2", true) #"[$1]$2[/$1]", true)
+		var bbcode_string = bbcode_regex.sub(xml_string, "$2", true) #"[$1]$2[/$1]", true)
 		return bbcode_string
 
 func _process_emotions(xml_string: String) -> String:
 	if SettingsManager.renderEmotions:
-		regex.compile("\\[{2}(.+?)\\]{2}")
-		var bbcode_string = regex.sub(xml_string, "", true) #"[$1]", true)
-		return bbcode_string
-	else:
-		return "neutral"
-#endregion
-
-#region pop out window
-@onready var window: Window = %PopOutChat
-@onready var label_target: Control = %LabelTarget # to keep track for moving label around
-
-func _on_pop_out_button_pressed() -> void:
-	pop_out_window()
-
-func pop_out_window() -> void:
-	if not window.visible:
-		swap_label_nodes()
-		window.visible = true
-
-func _on_window_close_requested() -> void:
-	swap_label_nodes()
-	window.visible = false
-
-func swap_label_nodes() -> void:
-	var parent1 := label.get_parent()
-	var index1: int = label.get_index()
-	var parent2 := label_target.get_parent()
-	var index2: int = label_target.get_index()
-	
-	label.reparent(parent2)
-	label_target.reparent(parent1)
-	
-	parent2.move_child(label, index2)
-	parent1.move_child(label_target, index1)
+		# extract emotion before removing it
+		var match = emotion_regex.search(xml_string)
+		if match:
+			current_emotion = match.get_string(1)
+	return emotion_regex.sub(xml_string, "", true) #"[$1]", true)
 #endregion

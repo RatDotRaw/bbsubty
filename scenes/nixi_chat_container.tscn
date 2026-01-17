@@ -1,17 +1,40 @@
-[gd_scene load_steps=14 format=3 uid="uid://djt0bmsg0rnfn"]
+[gd_scene load_steps=23 format=3 uid="uid://djt0bmsg0rnfn"]
 
 [ext_resource type="Script" uid="uid://c132785xw4sxk" path="res://scenes/ai_subtitles.gd" id="1_jwkof"]
 [ext_resource type="AudioStream" uid="uid://dr8igru66l6oi" path="res://assets/sounds/WAVE_SE_093.wav" id="2_jwkof"]
+[ext_resource type="Texture2D" uid="uid://baow3y177n4hy" path="res://assets/textures/icons/popup_menu.png" id="2_ur7y0"]
 [ext_resource type="Script" uid="uid://cnrpdg7nqbtoj" path="res://BBCode/cuss.gd" id="2_wkvxh"]
+[ext_resource type="Script" uid="uid://qt2c1dkxnnio" path="res://scripts/AMQP/AMQPTopicListener.cs" id="3_40j8j"]
 [ext_resource type="Script" uid="uid://bka815byo0dca" path="res://BBCode/jit.gd" id="3_ur7y0"]
+[ext_resource type="Texture2D" uid="uid://dniycdlgk6dm3" path="res://assets/textures/icons/popup_menu_undo.png" id="4_40j8j"]
 [ext_resource type="Script" uid="uid://csxu5n83svp4d" path="res://BBCode/rain.gd" id="4_hb02p"]
 [ext_resource type="Script" uid="uid://6gm5x5agbh2k" path="res://BBCode/sway.gd" id="5_40j8j"]
 [ext_resource type="Script" uid="uid://bgwv5uvjeh40t" path="res://BBCode/spring.gd" id="6_yn65b"]
+[ext_resource type="Script" uid="uid://d3c0r2ov48yde" path="res://scripts/pop_out_controller.gd" id="11_40j8j"]
+[ext_resource type="Texture2D" uid="uid://dy4dbfrisbs6c" path="res://assets/textures/angry_icon.png" id="12_6snno"]
+[ext_resource type="Script" uid="uid://ce2fg6h6je83v" path="res://scripts/ParticleUI.gd" id="13_8cwws"]
 
-[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_vb5ih"]
-random_pitch = 1.3
-streams_count = 1
-stream_0/stream = ExtResource("2_jwkof")
+[sub_resource type="Gradient" id="Gradient_51dmb"]
+offsets = PackedFloat32Array(0, 0.1, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_u0bb2"]
+gradient = SubResource("Gradient_51dmb")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_512o1"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(512, 10, 512)
+angle_min = -179.99998
+angle_max = 180.00002
+direction = Vector3(0, -1, 0)
+initial_velocity_max = 100.0
+angular_velocity_min = -60.000015
+angular_velocity_max = 59.99998
+scale_min = 0.089999996
+scale_max = 0.14999999
+color_ramp = SubResource("GradientTexture1D_u0bb2")
 
 [sub_resource type="RichTextEffect" id="RichTextEffect_ee4bf"]
 script = ExtResource("2_wkvxh")
@@ -33,7 +56,12 @@ metadata/_custom_type_script = "uid://6gm5x5agbh2k"
 script = ExtResource("6_yn65b")
 metadata/_custom_type_script = "uid://bgwv5uvjeh40t"
 
-[node name="MarginContainer" type="MarginContainer"]
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_vb5ih"]
+random_pitch = 1.3
+streams_count = 1
+stream_0/stream = ExtResource("2_jwkof")
+
+[node name="MarginContainer" type="MarginContainer" node_paths=PackedStringArray("listener")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -41,48 +69,62 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 14
 script = ExtResource("1_jwkof")
+listener = NodePath("AMQPTopicListener")
 
-[node name="TextAdvanceStreamPlayer" type="AudioStreamPlayer" parent="."]
-unique_name_in_owner = true
-stream = SubResource("AudioStreamRandomizer_vb5ih")
-mix_target = 2
-max_polyphony = 16
-bus = &"Text effect"
-
-[node name="PopOutChat" type="Window" parent="."]
-unique_name_in_owner = true
-transparent_bg = true
+[node name="popOutController" type="Window" parent="." node_paths=PackedStringArray("popout_button", "node")]
 oversampling_override = 1.0
-title = "Pop out chat"
 visible = false
-content_scale_size = Vector2i(680, 420)
+script = ExtResource("11_40j8j")
+popout_button = NodePath("../HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer/Button")
+node = NodePath("../HBoxContainer/PanelContainer")
+metadata/_custom_type_script = "uid://d3c0r2ov48yde"
 
-[node name="LabelTarget" type="Control" parent="PopOutChat"]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="AMQPTopicListener" type="Node" parent="."]
+script = ExtResource("3_40j8j")
+metadata/_custom_type_script = "uid://qt2c1dkxnnio"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
 
-[node name="PopOutButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
-text = "Pop Out"
-
-[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
+size_flags_horizontal = 0
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="Button" type="CheckButton" parent="HBoxContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_icons/checked = ExtResource("4_40j8j")
+theme_override_icons/unchecked = ExtResource("2_ur7y0")
+
+[node name="PanelContainer" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="HBoxContainer/PanelContainer"]
+texture = ExtResource("12_6snno")
+lifetime = 5.0
+process_material = SubResource("ParticleProcessMaterial_512o1")
+script = ExtResource("13_8cwws")
+resize_y = false
+alignment = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(720, 420)
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 1048.0
+offset_bottom = 632.0
+size_flags_horizontal = 3
 bbcode_enabled = true
 text = "shake:[shake]crazy shaky text![/shake]
 wave:[wave]crazy wavy text![/wave]
@@ -95,5 +137,9 @@ spring: [spring]very springgy text[/spring]"
 fit_content = true
 custom_effects = [SubResource("RichTextEffect_ee4bf"), SubResource("RichTextEffect_qtu10"), SubResource("RichTextEffect_kbped"), SubResource("RichTextEffect_fj5cn"), SubResource("RichTextEffect_iy58a")]
 
-[connection signal="close_requested" from="PopOutChat" to="." method="_on_window_close_requested"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/PopOutButton" to="." method="_on_pop_out_button_pressed"]
+[node name="TextAdvanceStreamPlayer" type="AudioStreamPlayer" parent="HBoxContainer/PanelContainer/RichTextLabel"]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamRandomizer_vb5ih")
+mix_target = 2
+max_polyphony = 16
+bus = &"Text effect"

@@ -1,0 +1,10 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://bcvw4dgqrbgbo"]
+
+[ext_resource type="Texture2D" uid="uid://bxqw4nbls0epc" path="res://assets/theme/inputfield_decoration.png" id="1_0xdt3"]
+
+[resource]
+texture = ExtResource("1_0xdt3")
+texture_margin_left = 9.0
+texture_margin_top = 9.0
+texture_margin_right = 9.0
+texture_margin_bottom = 9.0

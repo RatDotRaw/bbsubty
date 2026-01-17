@@ -28,3 +28,10 @@ text = "Rabbit: "
 unique_name_in_owner = true
 layout_mode = 2
 text = "offline"
+
+[node name="RabbitConnectButton" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Connect to Rabbit"
+
+[connection signal="pressed" from="VBoxContainer/RabbitConnectButton" to="." method="_on_rabbit_connect_button_pressed"]

@@ -5,7 +5,8 @@ extends Control
 @onready var msg_content: Label = $VBoxContainer/MsgContent
 
 func _ready() -> void:
-	assert(listener, "listener not assigned in editor")
+	await get_tree().process_frame
+	assert(listener, "listener not assigned in editor:"+ str(get_path()))
 	
 	listener.MessageReceived.connect(_on_message_received)
 

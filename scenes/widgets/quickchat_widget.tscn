@@ -4,8 +4,14 @@
 
 [node name="QuickchatWidget" type="TabContainer"]
 custom_minimum_size = Vector2(440, 0)
-offset_right = 172.0
-offset_bottom = 229.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_type_variation = &"TabContainerBorderless"
 current_tab = 0
 script = ExtResource("1_6dobv")
 

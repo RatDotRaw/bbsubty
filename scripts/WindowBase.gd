@@ -8,7 +8,7 @@ var label_fade_timer: Timer = Timer.new()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	window_size_label.visible = false	
+	window_size_label.visible = false
 	label_fade_timer.one_shot = true
 	label_fade_timer.wait_time = 5
 	

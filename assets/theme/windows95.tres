@@ -1,0 +1,25 @@
+[gd_resource type="Theme" load_steps=7 format=3 uid="uid://cnjsccbya0d1f"]
+
+[ext_resource type="StyleBox" uid="uid://cfd6rsfuo42qd" path="res://assets/theme/button/button_decoration.tres" id="1_crnuh"]
+[ext_resource type="StyleBox" uid="uid://d236fh88ttdha" path="res://assets/theme/window_decoration.tres" id="2_1sk68"]
+[ext_resource type="StyleBox" uid="uid://bcvw4dgqrbgbo" path="res://assets/theme/inputfield_decoration.tres" id="3_crnuh"]
+[ext_resource type="StyleBox" uid="uid://bakufhm34fbhe" path="res://assets/theme/button/button_press_decoration.tres" id="3_kcd3j"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_si35h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1sk68"]
+
+[resource]
+Button/styles/hover = ExtResource("1_crnuh")
+Button/styles/normal = ExtResource("1_crnuh")
+Button/styles/pressed = ExtResource("3_kcd3j")
+CheckBox/styles/normal = SubResource("StyleBoxEmpty_si35h")
+LineEdit/styles/normal = ExtResource("3_crnuh")
+PanelContainer/styles/panel = ExtResource("2_1sk68")
+PanelContainerButton/base_type = &"PanelContainer"
+PanelContainerButton/styles/panel = ExtResource("1_crnuh")
+RichTextLabel/colors/default_color = Color(0, 0, 0, 1)
+TabContainer/styles/panel = ExtResource("2_1sk68")
+TabContainerBorderless/base_type = &"TabContainer"
+TabContainerBorderless/styles/panel = SubResource("StyleBoxEmpty_1sk68")
+TextEdit/styles/normal = ExtResource("3_crnuh")

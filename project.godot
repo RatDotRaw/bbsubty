@@ -34,3 +34,4 @@ project/assembly_name="BBsubty"
 [gui]
 
 theme/default_theme_scale=2.0
+theme/custom="uid://cnjsccbya0d1f"

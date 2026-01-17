@@ -9,7 +9,7 @@ extends Control
 
 func _on_send_message_button_pressed() -> void:
 	var payload: Dictionary = {
-		"method": "chatcompletion",
+		"method": "chatStreamCompletion",
 		"replyTo": ["testchannel"],
 		"params": {
 			"content": message_content_text_edit.text,

@@ -1,8 +1,8 @@
 [gd_scene load_steps=14 format=3 uid="uid://yoi53gqvhp4y"]
 
 [ext_resource type="PackedScene" uid="uid://dwcj2khg0t7kq" path="res://scenes/widgets/status_widget.tscn" id="1_exs80"]
-[ext_resource type="PackedScene" uid="uid://bnarqounspxsb" path="res://scenes/widgets/controls_widget.tscn" id="2_kql7n"]
-[ext_resource type="PackedScene" uid="uid://cxprpd33t128p" path="res://scenes/widgets/quickchat_widget.tscn" id="3_tac8f"]
+[ext_resource type="Script" uid="uid://c62c7utsa6ak5" path="res://scenes/widgets/base_widget.gd" id="4_hob4j"]
+[ext_resource type="PackedScene" uid="uid://cxprpd33t128p" path="res://scenes/widgets/quickchat_widget.tscn" id="5_exs80"]
 [ext_resource type="Script" uid="uid://qt2c1dkxnnio" path="res://scripts/AMQP/AMQPTopicListener.cs" id="6_1p5nq"]
 [ext_resource type="PackedScene" uid="uid://djt0bmsg0rnfn" path="res://scenes/nixi_chat_container.tscn" id="6_hob4j"]
 [ext_resource type="Script" uid="uid://bbkylovd0l86d" path="res://scenes/message_display.gd" id="7_hob4j"]
@@ -89,10 +89,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_lt2xq")
-current_tab = 2
+current_tab = 0
 
 [node name="Control" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -109,10 +108,15 @@ theme_override_constants/v_separation = 16
 [node name="StatusWidget" parent="TabContainer/Control/HFlowContainer" instance=ExtResource("1_exs80")]
 layout_mode = 2
 
-[node name="ControlsWidget" parent="TabContainer/Control/HFlowContainer" instance=ExtResource("2_kql7n")]
+[node name="BaseWidget" type="PanelContainer" parent="TabContainer/Control/HFlowContainer"]
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("4_hob4j")
+metadata/_custom_type_script = "uid://c62c7utsa6ak5"
 
-[node name="QuickchatWidget" parent="TabContainer/Control/HFlowContainer" instance=ExtResource("3_tac8f")]
+[node name="QuickchatWidget" parent="TabContainer/Control/HFlowContainer/BaseWidget" instance=ExtResource("5_exs80")]
+visible = false
 layout_mode = 2
 
 [node name="Chat" type="Control" parent="TabContainer"]
@@ -123,9 +127,13 @@ metadata/_tab_index = 1
 [node name="ChatMessage" type="Control" parent="TabContainer/Chat" node_paths=PackedStringArray("listener")]
 anchors_preset = 0
 script = ExtResource("7_hob4j")
-listener = NodePath("../../Actors/AMQPTopicListener")
+listener = NodePath("AMQPTopicListener")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="TabContainer/Chat/ChatMessage"]
+
+[node name="AMQPTopicListener" type="Node" parent="TabContainer/Chat/ChatMessage"]
+script = ExtResource("6_1p5nq")
+metadata/_custom_type_script = "uid://qt2c1dkxnnio"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Chat/ChatMessage"]
 layout_mode = 0
@@ -141,18 +149,12 @@ layout_mode = 2
 text = "Message content"
 
 [node name="Actors" type="Control" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="AMQPTopicListener" type="Node" parent="TabContainer/Actors"]
-script = ExtResource("6_1p5nq")
-metadata/_custom_type_script = "uid://qt2c1dkxnnio"
-
-[node name="nixi_chat_container" parent="TabContainer/Actors" node_paths=PackedStringArray("listener") instance=ExtResource("6_hob4j")]
+[node name="nixi_chat_container" parent="TabContainer/Actors" instance=ExtResource("6_hob4j")]
 layout_mode = 1
-offset_right = 29.0
-offset_bottom = 388.0
-listener = NodePath("../AMQPTopicListener")
 
 [node name="Settings" parent="TabContainer" instance=ExtResource("9_01bab")]
 visible = false

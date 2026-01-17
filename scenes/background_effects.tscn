@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://u28d1mxcjh26"]
+
+[ext_resource type="Texture2D" uid="uid://dy4dbfrisbs6c" path="res://assets/textures/angry_icon.png" id="1_jvsmw"]
+
+[sub_resource type="Gradient" id="Gradient_46bh1"]
+offsets = PackedFloat32Array(0, 0.1, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_u0bb2"]
+gradient = SubResource("Gradient_46bh1")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e02bt"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(512, 512, 512)
+angle_min = -179.99998
+angle_max = 180.00002
+direction = Vector3(0, -1, 0)
+initial_velocity_max = 100.0
+angular_velocity_min = -60.000015
+angular_velocity_max = 59.99998
+scale_min = 0.089999996
+scale_max = 0.14999999
+color_ramp = SubResource("GradientTexture1D_u0bb2")
+
+[node name="BackgroundEffects" type="Node2D"]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+amount = 24
+texture = ExtResource("1_jvsmw")
+lifetime = 5.0
+process_material = SubResource("ParticleProcessMaterial_e02bt")
