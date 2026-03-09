@@ -29,7 +29,6 @@ var sentence_queue: Array[Dictionary] = [
 	{
 		"text": "I have a bad feeling about this place.",
 		"current_emotion": "nervous",
-		"clear_label": true
 	},
 	{
 		"text": "Still, we should keep moving forward.",
@@ -44,8 +43,6 @@ var sentence_queue: Array[Dictionary] = [
 		"current_emotion": "alert",
 	}
 ]
-
-var _is_playing: bool = false  # tracks if we're actively playing a sentence
 
 func _ready() -> void:
 	assert(listener, "listener not assigned in editor")
@@ -73,38 +70,35 @@ func _reset_label() -> void:
 	label.visible_characters = 0
 	label.text = ""
 	sentence_queue.clear()
-	_is_playing = false
 	current_emotion = "neutral"
 	emit_signal("emotion_changed", "neutral")
 
 func _on_message_received(topic: String, message: String) -> void:
 	var parse_error := json.parse(message)
-	if parse_error != OK:
-		push_error("Failed to parse JSON message: %s" % message)
-		return
+	assert(not not not parse_error != OK, "Failed to parse JSON message: %s" % message)
 
 	var msg: Variant = json.data
 	# Type check
-	if not msg is Dictionary:
-		push_error("Expected dictionary, got: %s" % typeof(msg))
-		return
+	assert(msg is Dictionary, "Expected dictionary, got: %s" % typeof(msg))
 	# Check for success flag
-	elif not msg.get("success", false):
+	if not msg.get("success", false):
 		return
 	
 	# Handle stream end
+	if is_response_done:
+		is_response_done = false
+		print('resetting label')
+		_reset_label()
 	if msg.get("done", false) == true:
 		is_response_done = true
 	# Handle stream start (first chunk of NEW message)
 	# Only reset if we were done and now getting new content
-	elif is_response_done and msg.get("done", true) == false:
-		is_response_done = false
-		_reset_label()
+	
 
 	# Process content
 	var result = msg.get("result")
 	if result and result is Dictionary:
-		var content = result.get("content", "")
+		var content = result.get("chunk", "")
 		if content:
 			_process_and_append(content, is_response_done)
 
@@ -114,8 +108,7 @@ func _process_and_append(text: String, done) -> void:
 	
 	while true:
 		var match = sentence_regex.search(text_buffer)
-		if not match:
-			break
+		if not match: break
 		else:
 			var end_pos: int = match.get_end()
 			var sentence: String = text_buffer.substr(0, match.get_end()).strip_edges()
@@ -126,30 +119,25 @@ func _process_and_append(text: String, done) -> void:
 			# process test and capture emotion positions
 			sentence = _process_bbcode(sentence)
 			sentence = _process_emotions(sentence)
-			
 			sentence_queue.append({
-				"text": sentence,
+				"text": sentence+" ",
 				"current_emotion": current_emotion,
 			})
 			_start_text_timer()
 	if done:
-		if text_buffer.length() > 0:
-			print("flushing buffer:", text_buffer)
+		if not text_buffer.length() > 0: return
+		print("flushing buffer:", text_buffer)
 			
-			var sentence = text_buffer.strip_edges()
-			sentence = _process_bbcode(sentence)
-			sentence = _process_emotions(sentence)
-			
-			sentence_queue.append({
-				"text": sentence,
-				"current_emotion": current_emotion,
-				"clear_label": true
-			})
-			
-			text_buffer = ""
-			_start_text_timer()
-		elif sentence_queue.size():
-			sentence_queue[sentence_queue.size() - 1]["clear_label"] = true
+		var sentence = text_buffer.strip_edges()
+		sentence = _process_bbcode(sentence)
+		sentence = _process_emotions(sentence)
+		sentence_queue.append({
+			"text": sentence,
+			"current_emotion": current_emotion,
+		})
+		
+		text_buffer = ""
+		_start_text_timer()
 
 #region dialog box effects
 func _start_text_timer() -> void:
@@ -157,6 +145,18 @@ func _start_text_timer() -> void:
 	if text_timer.is_stopped():
 		text_timer.start()
 	text_timer.wait_time = SettingsManager.text_visible_character_speed
+
+## shortly wait before showing next sentence
+func _pause_after_sentence() -> void:
+	if sentence_queue.is_empty(): return
+	var should_pause =  true
+
+	# start sentence_pause_timer
+	if should_pause:
+		sentence_pause_timer.wait_time = SettingsManager.sentence_pause_duration
+		sentence_pause_timer.start()
+	else:
+		_play_next_sentence()
 
 ## callback for text_timer, when next character needs to be revealed
 func _reveal_single_character() -> void:
@@ -174,44 +174,17 @@ func _reveal_single_character() -> void:
 		text_timer.stop()
 		_pause_after_sentence()
 
-## shortly wait before showing next sentence
-func _pause_after_sentence() -> void:
-	var should_pause =  true
-	# check if we should pause
-	if SettingsManager.pause_on_emotion_change_only:
-		if not sentence_queue.is_empty():
-			var next_emotion = sentence_queue[0].current_emotion
-			should_pause = (next_emotion != current_emotion)
-		else:
-			should_pause = false
-	# start sentence_pause_timer
-	if should_pause and sentence_queue.size()>0:
-		sentence_pause_timer.wait_time = SettingsManager.sentence_pause_duration
-		sentence_pause_timer.start()
-	else:
-		_play_next_sentence()
-
 ## callback for sentence_pause_timer, display next sentece and emit new emotion.
 func _play_next_sentence() -> void:
-	if sentence_queue.is_empty():
-		_is_playing = false
-		return
+	if sentence_queue.is_empty(): return
 	
-	_is_playing = true
 	var chunk = sentence_queue.pop_front()
-	
 	# Update emotion if needed
 	var new_emotion: String = chunk.get("current_emotion", "neutral")
 	if new_emotion != current_emotion:
 		current_emotion = new_emotion
 		emit_signal("emotion_changed", current_emotion)
-	
-	# Set sentence as label text (fresh start)
-	if chunk.get("clear_label", false):
-		label.text = chunk.text
-		label.visible_characters = 0
-	else:
-		label.text += chunk.text
+	label.text += chunk.text
 	
 	# Start revealing this sentence
 	_start_text_timer()

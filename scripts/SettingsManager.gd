@@ -47,7 +47,6 @@ var rabbit_virtualHost: String:
 
 var text_visible_character_speed: float = 0.01
 var sentence_pause_duration: float = .5
-var pause_on_emotion_change_only: bool = false
 var renderEmotions: bool = true
 var renderBBCode: bool = true
 
