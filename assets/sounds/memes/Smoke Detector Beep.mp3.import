@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dyay70udypyet"
+path="res://.godot/imported/Smoke Detector Beep.mp3-0a04c82f616b02416d1e1265077679de.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/memes/Smoke Detector Beep.mp3"
+dest_files=["res://.godot/imported/Smoke Detector Beep.mp3-0a04c82f616b02416d1e1265077679de.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

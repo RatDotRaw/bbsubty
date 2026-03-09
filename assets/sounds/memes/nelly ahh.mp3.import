@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bhc7iiosjynr4"
+path="res://.godot/imported/nelly ahh.mp3-4921b30b15cd20bca5960c8bee435aeb.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/memes/nelly ahh.mp3"
+dest_files=["res://.godot/imported/nelly ahh.mp3-4921b30b15cd20bca5960c8bee435aeb.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

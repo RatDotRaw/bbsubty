@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://d236fh88ttdha"]
 
-[ext_resource type="Texture2D" uid="uid://cbnerhs3kdiba" path="res://assets/theme/window_decoration.png" id="1_ky0pw"]
+[ext_resource type="Texture2D" uid="uid://cbnerhs3kdiba" path="res://assets/theme/windows/window_decoration.png" id="1_ky0pw"]
 
 [resource]
 content_margin_left = 16.0

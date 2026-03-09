@@ -1,0 +1,56 @@
+[gd_resource type="Theme" load_steps=12 format=3 uid="uid://dvhjmxh2fhu8m"]
+
+[ext_resource type="Texture2D" uid="uid://cakgxqccso7c5" path="res://assets/theme/end/button.svg" id="1_4pewo"]
+[ext_resource type="Texture2D" uid="uid://qg3ry8a3lmka" path="res://assets/theme/end/tile.svg" id="1_7caaa"]
+[ext_resource type="Texture2D" uid="uid://1ueqpoy2own0" path="res://assets/theme/end/label.svg" id="2_4pewo"]
+[ext_resource type="Texture2D" uid="uid://btlack546pa53" path="res://assets/theme/end/label_top.svg" id="3_ejcq5"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ejcq5"]
+texture = ExtResource("1_4pewo")
+texture_margin_left = 33.0
+texture_margin_top = 6.0
+texture_margin_right = 33.0
+texture_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4pewo"]
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vtaua"]
+texture = ExtResource("1_7caaa")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cclrn"]
+texture = ExtResource("1_7caaa")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_suyb8"]
+texture = ExtResource("2_4pewo")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5cs0v"]
+texture = ExtResource("3_ejcq5")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5crrm"]
+texture = ExtResource("1_7caaa")
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[resource]
+Button/colors/font_color = Color(0.26293287, 0.26293227, 0.26293242, 1)
+Button/styles/normal = SubResource("StyleBoxTexture_ejcq5")
+HSlider/styles/slider = SubResource("StyleBoxFlat_4pewo")
+Panel/styles/panel = SubResource("StyleBoxTexture_vtaua")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_cclrn")
+ProgressBar/styles/background = SubResource("StyleBoxTexture_suyb8")
+ProgressBar/styles/fill = SubResource("StyleBoxTexture_5cs0v")
+TabContainer/styles/panel = SubResource("StyleBoxTexture_5crrm")

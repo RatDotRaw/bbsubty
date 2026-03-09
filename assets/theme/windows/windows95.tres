@@ -1,9 +1,9 @@
 [gd_resource type="Theme" load_steps=7 format=3 uid="uid://cnjsccbya0d1f"]
 
-[ext_resource type="StyleBox" uid="uid://cfd6rsfuo42qd" path="res://assets/theme/button/button_decoration.tres" id="1_crnuh"]
-[ext_resource type="StyleBox" uid="uid://d236fh88ttdha" path="res://assets/theme/window_decoration.tres" id="2_1sk68"]
-[ext_resource type="StyleBox" uid="uid://bcvw4dgqrbgbo" path="res://assets/theme/inputfield_decoration.tres" id="3_crnuh"]
-[ext_resource type="StyleBox" uid="uid://bakufhm34fbhe" path="res://assets/theme/button/button_press_decoration.tres" id="3_kcd3j"]
+[ext_resource type="StyleBox" uid="uid://cfd6rsfuo42qd" path="res://assets/theme/windows/button/button_decoration.tres" id="1_crnuh"]
+[ext_resource type="StyleBox" uid="uid://d236fh88ttdha" path="res://assets/theme/windows/window_decoration.tres" id="2_1sk68"]
+[ext_resource type="StyleBox" uid="uid://bcvw4dgqrbgbo" path="res://assets/theme/windows/inputfield_decoration.tres" id="3_crnuh"]
+[ext_resource type="StyleBox" uid="uid://bakufhm34fbhe" path="res://assets/theme/windows/button/button_press_decoration.tres" id="3_kcd3j"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_si35h"]
 

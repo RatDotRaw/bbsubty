@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dpqni3hh8ixqq"
+path="res://.godot/imported/goofy ahh laugh.mp3-9a0af8de45bb20a6b1a077111a3007d2.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/memes/goofy ahh laugh.mp3"
+dest_files=["res://.godot/imported/goofy ahh laugh.mp3-9a0af8de45bb20a6b1a077111a3007d2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
